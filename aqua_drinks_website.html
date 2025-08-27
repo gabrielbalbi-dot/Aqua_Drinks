@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AQUA DRINKS - Catálogo de Productos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff6b35, #f7931e, #ffcd3c);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            text-align: center;
+            padding: 2rem 0;
+            background: rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #000;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.3);
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #000;
+            opacity: 0.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .product-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .product-card:hover::before {
+            left: 100%;
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+        }
+
+        .product-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .product-price {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ff6b35;
+            margin-bottom: 1rem;
+        }
+
+        .product-description {
+            color: #666;
+            line-height: 1.5;
+            font-size: 0.9rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            margin: 2% auto;
+            padding: 2rem;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close {
+            color: #000;
+            float: right;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #fff;
+        }
+
+        .modal-product-name {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #000;
+            margin: 1rem 0;
+            text-transform: uppercase;
+        }
+
+        .modal-product-price {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 1rem;
+        }
+
+        .modal-product-description {
+            color: #000;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-product-image {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 15px;
+            float: right;
+            margin-left: 2rem;
+            border: 3px solid rgba(0, 0, 0, 0.2);
+        }
+
+        .price-list {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-top: 2rem;
+        }
+
+        .price-list h2 {
+            text-align: center;
+            font-size: 2rem;
+            color: #000;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .price-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .price-item:last-child {
+            border-bottom: none;
+        }
+
+        .price-item-name {
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .price-item-price {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #ff6b35;
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2rem;
+            }
+            
+            .products-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1rem;
+            }
+            
+            .modal-content {
+                margin: 10% auto;
+                padding: 1.5rem;
+            }
+            
+            .modal-product-image {
+                width: 150px;
+                height: 150px;
+                float: none;
+                display: block;
+                margin: 1rem auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">AQUA DRINKS</div>
+        <div class="subtitle">TIZI, VICEN D.F, DANTE, LOLO</div>
+    </div>
+
+    <div class="container">
+        <div class="products-grid" id="productsGrid">
+            <!-- Los productos se cargarán aquí dinámicamente -->
+        </div>
+
+        <div class="price-list">
+            <h2>Lista de Precios</h2>
+            <div class="price-item">
+                <span class="price-item-name">Exprimido de Naranja</span>
+                <span class="price-item-price">$3000</span>
+            </div>
+            <div class="price-item">
+                <span class="price-item-name">Limonada</span>
+                <span class="price-item-price">$3500</span>
+            </div>
+            <div class="price-item">
+                <span class="price-item-name">Aqua Drinks</span>
+                <span class="price-item-price">$5000</span>
+            </div>
+            <div class="price-item">
+                <span class="price-item-name">Mix</span>
+                <span class="price-item-price">$4250</span>
+            </div>
+            <div class="price-item">
+                <span class="price-item-name">Licuados</span>
+                <span class="price-item-price">$3750</span>
+            </div>
+            <div class="price-item">
+                <span class="price-item-name">Agua sin Gas</span>
+                <span class="price-item-price">$1500</span>
+            </div>
+            <div class="price-item">
+                <span class="price-item-name">Agua con Gas</span>
+                <span class="price-item-price">$1500</span>
+            </div>
+            <div class="price-item">
+                <span class="price-item-name">Agua Saborizada</span>
+                <span class="price-item-price">$2000</span>
+            </div>
+            <div class="price-item">
+                <span class="price-item-name">Coca Cola</span>
+                <span class="price-item-price">$2500</span>
+            </div>
+            <div class="price-item">
+                <span class="price-item-name">Pepsi</span>
+                <span class="price-item-price">$2500</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <img id="modalImage" class="modal-product-image" src="" alt="">
+            <h2 id="modalName" class="modal-product-name"></h2>
+            <div id="modalPrice" class="modal-product-price"></div>
+            <p id="modalDescription" class="modal-product-description"></p>
+        </div>
+    </div>
+
+    <script>
+        const products = [
+            {
+                name: "Limonada",
+                price: "$3500",
+                description: "Limonada fresca rica y natural, hecha por la mejor empresa AQUA DRINKS cuando quieras.",
+                image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ibGVtb25HcmFkaWVudCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNmZmZmODUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZmZkNzAwIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0idXJsKCNsZW1vbkdyYWRpZW50KSIvPgogIDxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjMwIiBmaWxsPSIjZmZmZjAwIiBvcGFjaXR5PSIwLjgiLz4KICA8Y2lyY2xlIGN4PSIyNTAiIGN5PSI2MCIgcj0iMjUiIGZpbGw9IiNmZmZmMDAiIG9wYWNpdHk9IjAuNyIvPgogIDxjaXJjbGUgY3g9IjE1MCIgY3k9IjE1MCIgcj0iMzUiIGZpbGw9IiNmZmZmMDAiIG9wYWNpdHk9IjAuNiIvPgogIDx0ZXh0IHg9IjE1MCIgeT0iMTEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMzMzIj5MaW1vbmFkYTwvdGV4dD4KPC9zdmc+"
+            },
+            {
+                name: "Exprimido de Naranja",
+                price: "$3000",
+                description: "Es una bebida refrescante, rica y sabrosa. Ven a comprar y disfruta tu bebida.",
+                image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ib3JhbmdlR3JhZGllbnQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZmZiMzAwIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2ZmODUwMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9InVybCgjb3JhbmdlR3JhZGllbnQpIi8+CiAgPGNpcmNsZSBjeD0iNzAiIGN5PSI3MCIgcj0iNDAiIGZpbGw9IiNmZmE1MDAiIG9wYWNpdHk9IjAuOCIvPgogIDxjaXJjbGUgY3g9IjIzMCIgY3k9IjUwIiByPSIzMCIgZmlsbD0iI2ZmYTUwMCIgb3BhY2l0eT0iMC43Ii8+CiAgPGNpcmNsZSBjeD0iMTgwIiBjeT0iMTQwIiByPSI0NSIgZmlsbD0iI2ZmYTUwMCIgb3BhY2l0eT0iMC42Ii8+CiAgPHRleHQgeD0iMTUwIiB5PSIxMTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IiMzMzMiPkV4cHJpbWlkbyBkZSBOYXJhbmphPC90ZXh0Pgo8L3N2Zz4="
+            },
+            {
+                name: "Aqua Drinks",
+                price: "$4000",
+                description: "Es una bebida muy buena, rica y misteriosa.",
+                image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxyYWRpYWxHcmFkaWVudCBpZD0ibXlzdGVyeUdyYWRpZW50IiBjeD0iNTAlIiBjeT0iNTAlIiByPSI3MCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjNjY0NGZmIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjNDQyMmZmIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzIyMDBmZiIvPgogICAgPC9yYWRpYWxHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9InVybCgjbXlzdGVyeUdyYWRpZW50KSIvPgogIDx0ZXh0IHg9IjE1MCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iNjAiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjkiPj88L3RleHQ+CiAgPHRleHQgeD0iMTUwIiB5PSIxNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IiNmZmYiPk1pc3Rlcmlvc2E8L3RleHQ+Cjwvc3ZnPg=="
+            },
+            {
+                name: "Agua Rica y Saludable",
+                price: "$1500",
+                description: "Rica y saludable!!",
+                image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0id2F0ZXJHcmFkaWVudCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM4OGRkZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjNDRhYWZmIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0idXJsKCN3YXRlckdyYWRpZW50KSIvPgogIDxjaXJjbGUgY3g9IjgwIiBjeT0iNjAiIHI9IjE1IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjciLz4KICA8Y2lyY2xlIGN4PSIyMDAiIGN5PSI0MCIgcj0iMTAiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNiIvPgogIDxjaXJjbGUgY3g9IjEyMCIgY3k9IjE0MCIgcj0iMjAiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuNSIvPgogIDxjaXJjbGUgY3g9IjI0MCIgY3k9IjEyMCIgcj0iMTIiIGZpbGw9IiNmZmYiIG9wYWNpdHk9IjAuOCIvPgogIDx0ZXh0IHg9IjE1MCIgeT0iMTA1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjZmZmIj5BZ3VhIFJpY2EgeTwvdGV4dD4KICA8dGV4dCB4PSIxNTAiIHk9IjEyNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iI2ZmZiI+U2FsdWRhYmxlPC90ZXh0Pgo8L3N2Zz4="
+            },
+            {
+                name: "Soda",
+                price: "$1500",
+                description: "Soda, la soda es rica, se puede usar con la terma y se usa mucho en bebidas, es rica y deliciosa.",
+                image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ic29kYUdyYWRpZW50IiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2VlZmZmZiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNjY2VlZmYiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSJ1cmwoI3NvZGFHcmFkaWVudCkiLz4KICA8Y2lyY2xlIGN4PSI2MCIgY3k9IjUwIiByPSI4IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjgiLz4KICA8Y2lyY2xlIGN4PSIyNDAiIGN5PSI3MCIgcj0iNiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC43Ii8+CiAgPGNpcmNsZSBjeD0iMTIwIiBjeT0iMTMwIiByPSIxMCIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC45Ii8+CiAgPGNpcmNsZSBjeD0iMjAwIiBjeT0iMTQwIiByPSI3IiBmaWxsPSIjZmZmIiBvcGFjaXR5PSIwLjYiLz4KICA8Y2lyY2xlIGN4PSIxNDAiIGN5PSI2MCIgcj0iNSIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC44Ii8+CiAgPHRleHQgeD0iMTUwIiB5PSIxMTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IiM0NDc3YWEiPlNvZGE8L3RleHQ+Cjwvc3ZnPg=="
+            },
+            {
+                name: "Jugos",
+                price: "$2000",
+                description: "Agua saborizada, es rica y siempre está en los restaurantes y/o en los kioscos.",
+                image: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0ianVpY2VHcmFkaWVudCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNmZjk5MDAiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSI1MCUiIHN0b3AtY29sb3I9IiNmZjc3MDAiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZmY1NTAwIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0idXJsKCNqdWljZUdyYWRpZW50KSIvPgogIDxjaXJjbGUgY3g9IjcwIiBjeT0iNjAiIHI9IjIwIiBmaWxsPSIjZmZiYjAwIiBvcGFjaXR5PSIwLjgiLz4KICA8Y2lyY2xlIGN4PSIyMzAiIGN5PSI4MCIgcj0iMTUiIGZpbGw9IiNmZmJiMDAiIG9wYWNpdHk9IjAuNyIvPgogIDxjaXJjbGUgY3g9IjE1MCIgY3k9IjE0MCIgcj0iMjUiIGZpbGw9IiNmZmJiMDAiIG9wYWNpdHk9IjAuNiIvPgogIDx0ZXh0IHg9IjE1MCIgeT0iMTEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjZmZmIj5KdWdvczwvdGV4dD4KPC9zdmc+"
+            }
+        ];
+
+        // Generar las tarjetas de productos
+        function generateProductCards() {
+            const grid = document.getElementById('productsGrid');
+            
+            products.forEach((product, index) => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}" class="product-image">
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-price">${product.price}</div>
+                    <div class="product-description">${product.description.substring(0, 80)}...</div>
+                `;
+                
+                card.addEventListener('click', () => openModal(index));
+                grid.appendChild(card);
+            });
+        }
+
+        // Modal functionality
+        const modal = document.getElementById('productModal');
+        const closeBtn = document.querySelector('.close');
+
+        function openModal(productIndex) {
+            const product = products[productIndex];
+            
+            document.getElementById('modalImage').src = product.image;
+            document.getElementById('modalName').textContent = product.name;
+            document.getElementById('modalPrice').textContent = product.price;
+            document.getElementById('modalDescription').textContent = product.description;
+            
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        closeBtn.addEventListener('click', closeModal);
+
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Cerrar modal con Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.style.display === 'block') {
+                closeModal();
+            }
+        });
+
+        // Inicializar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            generateProductCards();
+        });
+    </script>
+</body>
+</html>
